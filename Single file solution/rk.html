@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regression in Machine Learning</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem;
+        }
+        main {
+            padding: 20px;
+        }
+        section {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 0.25rem;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        @media (max-width: 600px) {
+            section {
+                margin: 10px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Regression in Machine Learning</h1>
+    </header>
+    <main>
+        <section id="overview">
+            <h2>What is Regression?</h2>
+            <p>Regression is a type of supervised learning used in machine learning to model the relationship between dependent and independent variables. It helps in predicting continuous outcomes based on input features.</p>
+            <button id="learnMore">Learn More</button>
+            <p id="extraInfo" style="display: none;">Regression techniques include Linear Regression, Polynomial Regression, and Logistic Regression for classification problems.</p>
+        </section>
+        <section id="visualization">
+            <h2>Interactive Visualization</h2>
+            <canvas id="regressionChart" width="400" height="200"></canvas>
+        </section>
+        <section id="examples">
+            <h2>Real-World Examples</h2>
+            <ul>
+                <li>House price prediction</li>
+                <li>Stock market forecasting</li>
+                <li>Medical diagnosis and treatment planning</li>
+            </ul>
+        </section>
+        <section id="quiz">
+            <h2>Practice Quiz</h2>
+            <p id="quizQuestion"></p>
+            <button id="option1"></button>
+            <button id="option2"></button>
+            <p id="quizResult"></p>
+        </section>
+
+        <!-- Additional Resources Section -->
+        <section id="resources">
+            <h2>Additional Resources</h2>
+            <p>Explore these resources to learn more about machine learning and regression:</p>
+            <ul>
+                <li><a href="https://scikit-learn.org/stable/modules/linear_model.html" target="_blank">Scikit-Learn: Linear Models</a></li>
+                <li><a href="https://www.coursera.org/learn/machine-learning" target="_blank">Coursera: Machine Learning by Andrew Ng</a></li>
+                <li><a href="https://towardsdatascience.com/tagged/machine-learning" target="_blank">Towards Data Science: Machine Learning Articles</a></li>
+                <li><a href="https://developers.google.com/machine-learning/crash-course" target="_blank">Google's Machine Learning Crash Course</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Regression_analysis" target="_blank">Wikipedia: Regression Analysis</a></li>
+            </ul>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Machine Learning Insights</p>
+    </footer>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Add interactivity to the "Learn More" button
+        document.getElementById("learnMore").addEventListener("click", function() {
+            var extraInfo = document.getElementById("extraInfo");
+            if (extraInfo.style.display === "none") {
+                extraInfo.style.display = "block";
+            } else {
+                extraInfo.style.display = "none";
+            }
+        });
+
+        // Create a regression chart using Chart.js
+        const ctx = document.getElementById('regressionChart').getContext('2d');
+        const regressionChart = new Chart(ctx, {
+            type: 'scatter', // Scatter plot for data points
+            data: {
+                datasets: [
+                    {
+                        label: 'Data Points',
+                        data: [
+                            { x: 1, y: 2 },
+                            { x: 2, y: 3 },
+                            { x: 3, y: 5 },
+                            { x: 4, y: 4 },
+                            { x: 5, y: 6 },
+                            { x: 6, y: 7 },
+                            { x: 7, y: 8 },
+                            { x: 8, y: 9 },
+                            { x: 9, y: 10 }
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    },
+                    {
+                        label: 'Regression Line',
+                        data: [], // Will be populated dynamically
+                        type: 'line',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Function to calculate linear regression line
+        function calculateRegressionLine(data) {
+            const n = data.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+
+            data.forEach(point => {
+                sumX += point.x;
+                sumY += point.y;
+                sumXY += point.x * point.y;
+                sumX2 += point.x * point.x;
+            });
+
+            const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+
+            return { slope, intercept };
+        }
+
+        // Populate the regression line data
+        const dataPoints = regressionChart.data.datasets[0].data;
+        const { slope, intercept } = calculateRegressionLine(dataPoints);
+
+        const minX = Math.min(...dataPoints.map(p => p.x));
+        const maxX = Math.max(...dataPoints.map(p => p.x));
+
+        regressionChart.data.datasets[1].data = [
+            { x: minX, y: slope * minX + intercept },
+            { x: maxX, y: slope * maxX + intercept }
+        ];
+
+        // Update the chart
+        regressionChart.update();
+
+        // Quiz logic remains unchanged
+        var currentQuiz = 0;
+        var quizzes = [
+            {
+                question: "What type of regression is best suited for predicting house prices?",
+                correct: "Linear Regression",
+                options: ["Linear Regression", "Logistic Regression"]
+            },
+            {
+                question: "Which regression type is used for classification problems?",
+                correct: "Logistic Regression",
+                options: ["Linear Regression", "Logistic Regression"]
+            },
+            {
+                question: "What type of regression allows for polynomial relationships between variables?",
+                correct: "Polynomial Regression",
+                options: ["Linear Regression", "Polynomial Regression"]
+            }
+        ];
+        function loadQuiz() {
+            if (currentQuiz < quizzes.length) {
+                document.getElementById("quizQuestion").textContent = quizzes[currentQuiz].question;
+                document.getElementById("option1").textContent = quizzes[currentQuiz].options[0];
+                document.getElementById("option2").textContent = quizzes[currentQuiz].options[1];
+                document.getElementById("quizResult").textContent = "";
+                document.getElementById("option1").onclick = function() { checkAnswer(quizzes[currentQuiz].options[0]); };
+                document.getElementById("option2").onclick = function() { checkAnswer(quizzes[currentQuiz].options[1]); };
+            } else {
+                document.getElementById("quizQuestion").textContent = "You've completed the quiz!";
+                document.getElementById("option1").style.display = "none";
+                document.getElementById("option2").style.display = "none";
+            }
+        }
+        function checkAnswer(answer) {
+            var result = document.getElementById("quizResult");
+            if (answer === quizzes[currentQuiz].correct) {
+                result.textContent = "Correct!";
+                currentQuiz++;
+                setTimeout(loadQuiz, 1000);
+            } else {
+                result.textContent = "Incorrect. Try again!";
+            }
+        }
+        loadQuiz();
+    </script>
+</body>
+</html>
